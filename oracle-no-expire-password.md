@@ -142,7 +142,7 @@ FROM dba_profiles
 WHERE profile = (SELECT profile FROM dba_users WHERE username = 'SYSTEM')
 AND resource_name = 'PASSWORD_LIFE_TIME';
 
--- 3. Create a new profile (run as SYS AS SYSDBA)
+-- 3. Create a new profile
 CREATE PROFILE NO_EXPIRE_PROFILE LIMIT
     PASSWORD_LIFE_TIME UNLIMITED;
 
