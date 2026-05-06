@@ -6,11 +6,11 @@ A collection of notes and guides about Oracle Database.
 
 ## Notes
 
-| File | Description |
-|---|---|
-| [oracle-no-expire-password.md](oracle-no-expire-password.md) | Complete guide to change the `SYSTEM` user profile so the password never expires — covers status check, creating a new profile, and final verification. |
-| [rman-delete-archive-log.md](rman-delete-archive-log.md) | Guide to safely delete archive log files older than 1 month via RMAN — covers crosscheck, list preview, delete options, and verification with sample output. |
-| [datapump-export.md](datapump-export.md) | Complete guide to backup using Oracle Data Pump Export (`expdp`) on Windows and Linux — covers directory setup, all parameters, 12c/19c/21c features, usage examples with sample output, and troubleshooting. |
-| [datapump-import.md](datapump-import.md) | Complete guide to restore using Oracle Data Pump Import (`impdp`) on Windows and Linux — covers directory setup, all parameters, remapping options, 12c/19c/21c features, usage examples with sample output, and troubleshooting. |
-| [rename-pluggable-database.md](rename-pluggable-database.md) | Step-by-step guide to rename a Pluggable Database (PDB) in Oracle 19c — covers closing the PDB, opening in restricted mode, renaming via `RENAME GLOBAL_NAME TO`, and verification. |
-| [move-tablespace-objects.md](move-tablespace-objects.md) | Guide to move all tablespace objects (tables, partitions, sub-partitions, LOBs, and indexes) from one tablespace to another using a generate-then-execute DDL pattern. |
+| No | File | Description |
+|---|---|---|
+| 1 | [datapump-export.md](datapump-export.md) | Complete guide to backup using Oracle Data Pump Export (`expdp`) on Windows and Linux — covers directory setup, all parameters, 12c/19c/21c features, usage examples with sample output, and troubleshooting. |
+| 2 | [datapump-import.md](datapump-import.md) | Complete guide to restore using Oracle Data Pump Import (`impdp`) on Windows and Linux — covers directory setup, all parameters, remapping options, 12c/19c/21c features, usage examples with sample output, and troubleshooting. |
+| 3 | [move-tablespace-objects.md](move-tablespace-objects.md) | Guide to move all tablespace objects (tables, partitions, sub-partitions, LOBs, and indexes) from one tablespace to another using a generate-then-execute DDL pattern. |
+| 4 | [oracle-no-expire-password.md](oracle-no-expire-password.md) | Complete guide to change the `SYSTEM` user profile so the password never expires — covers status check, creating a new profile, and final verification. |
+| 5 | [rename-pluggable-database.md](rename-pluggable-database.md) | Step-by-step guide to rename a Pluggable Database (PDB) in Oracle 19c — covers closing the PDB, opening in restricted mode, renaming via `RENAME GLOBAL_NAME TO`, and verification. |
+| 6 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | Guide to safely delete archive log files older than 1 month via RMAN — covers crosscheck, list preview, delete options, and verification with sample output. |
