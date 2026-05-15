@@ -4,6 +4,28 @@ Oracle Data Pump Import (`impdp`) is a server-side utility for importing databas
 
 ---
 
+## Import Process Overview
+
+```mermaid
+flowchart TD
+    A([.dmp Dump File on Server]) --> B[Run impdp Command]
+    B --> C[Load Master Table<br/>from dump file]
+    C --> D{Remapping?}
+    D -->|REMAP_SCHEMA| E1[Map source schema<br/>to target schema]
+    D -->|REMAP_TABLESPACE| E2[Redirect objects to<br/>different tablespace]
+    D -->|None| E3[Import as-is]
+    E1 & E2 & E3 --> F{TABLE_EXISTS_ACTION}
+    F -->|SKIP| G1[Skip existing table]
+    F -->|APPEND| G2[Append rows to<br/>existing table]
+    F -->|TRUNCATE| G3[Empty table<br/>then insert]
+    F -->|REPLACE| G4[Drop, recreate,<br/>then insert]
+    G1 & G2 & G3 & G4 --> H[Import Objects<br/>Tables, Indexes, Views, Procs]
+    H --> I[Write Log File]
+    I --> J([Import Complete])
+```
+
+---
+
 ## Table of Contents
 
 1. [Directory Setup](#1-directory-setup)

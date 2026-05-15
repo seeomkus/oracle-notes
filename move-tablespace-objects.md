@@ -8,6 +8,26 @@ The approach used here is a **generate-then-execute** pattern: each query produc
 
 ---
 
+## Migration Process Overview
+
+```mermaid
+flowchart TD
+    A([Start Migration]) --> B[Step 1: Check Segment Distribution<br/>dba_segments — size and type in source tablespace]
+    B --> C{Object Types to Move}
+    C -->|Regular Tables| D[Step 2: ALTER TABLE MOVE TABLESPACE<br/>non-partitioned tables only]
+    C -->|Partitioned Tables| E[Step 3: ALTER TABLE MOVE PARTITION<br/>per partition]
+    C -->|Sub-Partitioned Tables| F[Step 4: ALTER TABLE MOVE SUBPARTITION<br/>per sub-partition]
+    C -->|LOB Columns| G[Step 5: ALTER TABLE MOVE LOB STORE AS<br/>separate from table move]
+    D & E & F & G --> H[Step 6a: Rebuild Non-Partitioned Indexes<br/>ALTER INDEX REBUILD TABLESPACE]
+    H --> I[Step 6b: Rebuild Partitioned Index Partitions<br/>ALTER INDEX REBUILD PARTITION]
+    I --> J[Step 7: Verify — Re-run dba_segments check]
+    J --> K{Segments remaining<br/>in source tablespace?}
+    K -->|Yes — other types remain| C
+    K -->|No| L([Migration Complete])
+```
+
+---
+
 ## Prerequisites
 
 - Access to Oracle Database as `SYS AS SYSDBA` or a user with `DBA` privilege.

@@ -10,6 +10,24 @@ This guide covers a **two-script approach**:
 
 ---
 
+## Workflow Overview
+
+```mermaid
+flowchart TD
+    A([Start Maintenance]) --> B[Phase 1: Dry Run<br/>dry_run_sessions_and_users.sql]
+    B --> C{Review Output}
+    C -->|Sessions found — proceed| D[Phase 2: Execute<br/>kill_sessions_and_lock_users.sql]
+    C -->|No sessions or wrong users| STOP([Stop — No Action Needed])
+    D --> E[Kill All Active Sessions<br/>ALTER SYSTEM KILL SESSION IMMEDIATE]
+    E --> F[Wait 3 seconds<br/>DBMS_SESSION.SLEEP 3]
+    F --> G[Lock User Accounts<br/>ALTER USER ... ACCOUNT LOCK]
+    G --> H[Verify: 0 sessions remaining<br/>account_status = LOCKED]
+    H --> I([Maintenance Window Complete])
+    I -.->|After maintenance is done| J[Unlock Users<br/>ALTER USER ... ACCOUNT UNLOCK]
+```
+
+---
+
 ## Compatibility
 
 ### Oracle Database Versions
@@ -61,6 +79,38 @@ Replace these placeholders with values matching your environment:
 | `/opt/oracle/logs/` | Directory for log output (Linux) | `/home/oracle/logs/` |
 | `C:\app\oracle\product\19.0.0\dbhome_1` | Oracle Home path (Windows) | Your actual `ORACLE_HOME` |
 | `/u01/app/oracle/product/19.0.0/dbhome_1` | Oracle Home path (Linux) | Your actual `ORACLE_HOME` |
+
+---
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant DBA
+    participant Script as SQL Script
+    participant Oracle as Oracle Database
+
+    Note over DBA,Oracle: Phase 1 — Dry Run (no changes)
+    DBA->>Script: Run dry_run_sessions_and_users.sql
+    Script->>Oracle: SELECT sid, serial# FROM v$session<br/>WHERE username IN APP_USER, APP_SAP
+    Oracle-->>Script: Active session list + account status
+    Script-->>DBA: Output: N sessions found, status = OPEN
+
+    Note over DBA,Oracle: Phase 2 — Execute Kill and Lock
+    DBA->>Script: Run kill_sessions_and_lock_users.sql
+    Script->>Oracle: FOR each session:<br/>ALTER SYSTEM KILL SESSION IMMEDIATE
+    Oracle-->>Script: Sessions terminated
+    Script->>Oracle: DBMS_SESSION.SLEEP(3)
+    Script->>Oracle: ALTER USER APP_USER ACCOUNT LOCK
+    Script->>Oracle: ALTER USER APP_SAP ACCOUNT LOCK
+    Oracle-->>Script: Account status = LOCKED
+    Script-->>DBA: 0 sessions remaining — status = LOCKED
+
+    Note over DBA,Oracle: After Maintenance Window
+    DBA->>Oracle: ALTER USER APP_USER ACCOUNT UNLOCK
+    DBA->>Oracle: ALTER USER APP_SAP ACCOUNT UNLOCK
+    Oracle-->>DBA: Accounts reopened
+```
 
 ---
 

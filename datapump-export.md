@@ -4,6 +4,30 @@ Oracle Data Pump Export (`expdp`) is a server-side utility for exporting databas
 
 ---
 
+## Export Process Overview
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[1. Create OS Directory<br/>on Oracle Server]
+    B --> C[2. Create DIRECTORY Object<br/>in Oracle Database]
+    C --> D[3. Grant READ / WRITE<br/>to export user]
+    D --> E{4. Choose Export Mode}
+    E -->|Full DB| F1[FULL=Y]
+    E -->|Schema| F2[SCHEMAS=...]
+    E -->|Table| F3[TABLES=...]
+    E -->|Tablespace| F4[TABLESPACES=...]
+    F1 & F2 & F3 & F4 --> G[5. Run expdp Command]
+    G --> H{Job Status}
+    H -->|Completed| I[6. Review Log File<br/>grep for ORA- errors]
+    H -->|Running| J[Monitor via ATTACH<br/>or dba_datapump_jobs]
+    J --> H
+    H -->|Failed| K[Check Log<br/>Troubleshoot and Retry]
+    K --> G
+    I --> L([Dump File Ready])
+```
+
+---
+
 ## Table of Contents
 
 1. [Directory Setup](#1-directory-setup)
@@ -80,6 +104,17 @@ DATAPUMP_DIR       /oracle/datapump
 | Tablespace | `TABLESPACES=tbs1,tbs2` | Exports all objects in specified tablespaces |
 | Table | `TABLES=schema.table1,schema.table2` | Exports specific tables |
 | Transportable Tablespace | `TRANSPORT_TABLESPACES=tbs1` | Exports metadata for transportable tablespace |
+
+```mermaid
+flowchart LR
+    DB[(Oracle Database)]
+    DB -->|FULL=Y| A[Full Database<br/>All schemas and system metadata]
+    DB -->|SCHEMAS=...| B[Schema Level<br/>One or more schemas]
+    DB -->|TABLES=...| C[Table Level<br/>Specific tables with optional row filter]
+    DB -->|TABLESPACES=...| D[Tablespace Level<br/>All objects stored in the tablespace]
+    DB -->|TRANSPORT_TABLESPACES=...| E[Transportable<br/>Metadata only — datafiles moved separately]
+    A & B & C & D & E --> F[.dmp Dump File<br/>written to DIRECTORY]
+```
 
 ---
 

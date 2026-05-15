@@ -17,6 +17,48 @@ This guide walks through the complete steps to safely rename a PDB in Oracle Dat
 
 ---
 
+## Rename Process Overview
+
+```mermaid
+sequenceDiagram
+    participant DBA
+    participant CDB as CDB Root
+    participant PDB as OLD_PDB_NAME
+
+    Note over DBA,PDB: Step 1 — Verify current PDB list
+    DBA->>CDB: SHOW PDBS
+    CDB-->>DBA: OLD_PDB_NAME — READ WRITE
+
+    Note over DBA,PDB: Step 2 — Close PDB
+    DBA->>CDB: ALTER PLUGGABLE DATABASE OLD_PDB_NAME CLOSE IMMEDIATE
+    CDB->>PDB: Disconnect all sessions
+    PDB-->>CDB: Status: MOUNTED
+
+    Note over DBA,PDB: Step 3 — Open in Restricted Mode
+    DBA->>CDB: ALTER PLUGGABLE DATABASE OLD_PDB_NAME OPEN RESTRICTED
+    PDB-->>CDB: READ WRITE (RESTRICTED = YES)
+
+    Note over DBA,PDB: Step 4 — Switch Session Context to PDB
+    DBA->>CDB: ALTER SESSION SET CONTAINER = OLD_PDB_NAME
+    CDB-->>DBA: Session context switched to PDB
+
+    Note over DBA,PDB: Step 5 — Rename
+    DBA->>PDB: ALTER PLUGGABLE DATABASE RENAME GLOBAL_NAME TO NEW_PDB_NAME
+    PDB-->>DBA: Rename applied in CDB data dictionary
+
+    Note over DBA,PDB: Step 6 — Close and Reopen
+    DBA->>PDB: ALTER PLUGGABLE DATABASE CLOSE IMMEDIATE
+    DBA->>PDB: ALTER PLUGGABLE DATABASE OPEN
+    PDB-->>DBA: NEW_PDB_NAME — READ WRITE
+
+    Note over DBA,PDB: Step 7 — Return to CDB Root and Verify
+    DBA->>CDB: ALTER SESSION SET CONTAINER = CDB$ROOT
+    DBA->>CDB: SHOW PDBS
+    CDB-->>DBA: NEW_PDB_NAME — READ WRITE — RESTRICTED = NO
+```
+
+---
+
 ## Step 1 — Connect to the Database and Check Current PDBs
 
 Connect to the CDB (Container Database) as `SYSDBA` and verify the existing PDBs.

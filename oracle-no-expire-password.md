@@ -11,6 +11,25 @@ By default, Oracle Database enforces a password expiration policy through the `P
 
 ---
 
+## Process Overview
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[Step 1: Check User Status<br/>SELECT FROM dba_users]
+    B --> C{account_status?}
+    C -->|OPEN| D[Step 2: Check Profile<br/>PASSWORD_LIFE_TIME setting]
+    C -->|EXPIRED or LOCKED| D
+    D --> E[Step 3: Create New Profile<br/>PASSWORD_LIFE_TIME UNLIMITED]
+    E --> F[Step 4: Assign Profile to SYSTEM<br/>ALTER USER SYSTEM PROFILE NO_EXPIRE_PROFILE]
+    F --> G[Step 5: Reset Password<br/>ALTER USER SYSTEM IDENTIFIED BY new_password]
+    G --> H[Final Verification<br/>SELECT FROM dba_users]
+    H --> I{account_status = OPEN<br/>expiry_date = NULL?}
+    I -->|Yes| J([Done — Password Never Expires])
+    I -->|No| G
+```
+
+---
+
 ## Step 1 — Check User Status
 
 Verify whether the `SYSTEM` account is expired or not.

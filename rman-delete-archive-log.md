@@ -12,6 +12,24 @@ Archive logs are generated continuously by Oracle Database in ARCHIVELOG mode. O
 
 ---
 
+## Cleanup Process Overview
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[Step 1: Connect to RMAN<br/>rman target /]
+    B --> C[Step 2: Crosscheck Archive Logs<br/>CROSSCHECK ARCHIVELOG ALL]
+    C --> D[Remove Expired Entries from Catalog<br/>DELETE NOPROMPT EXPIRED ARCHIVELOG ALL]
+    D --> E[Step 3: Preview Logs to Delete<br/>LIST ARCHIVELOG ALL COMPLETED BEFORE SYSDATE-30]
+    E --> F{Step 4: Choose Delete Method}
+    F -->|Interactive — prompts YES or NO| G1[DELETE ARCHIVELOG ALL<br/>COMPLETED BEFORE SYSDATE-30]
+    F -->|Automated — no prompt| G2[DELETE NOPROMPT ARCHIVELOG ALL<br/>COMPLETED BEFORE SYSDATE-30]
+    F -->|Files already missing from disk| G3[DELETE FORCE NOPROMPT ARCHIVELOG ALL<br/>COMPLETED BEFORE SYSDATE-30]
+    G1 & G2 & G3 --> H[Step 5: Verify Remaining Logs<br/>LIST ARCHIVELOG ALL]
+    H --> I([Cleanup Complete])
+```
+
+---
+
 ## Step 1 — Connect to RMAN
 
 Open a command prompt or terminal, then connect to RMAN targeting the local database.

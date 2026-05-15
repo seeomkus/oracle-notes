@@ -14,6 +14,34 @@ This guide demonstrates how to create a simple table structure and populate it w
 
 ---
 
+## Process Overview
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[Step 1: Drop Existing Tables<br/>EXECUTE IMMEDIATE DROP TABLE PURGE]
+    B --> C[Step 2: Create 7 Tables<br/>data_dummy through data_dummy6]
+    C --> D[Step 3: Insert Dummy Data<br/>SELECT FROM dual CONNECT BY LEVEL]
+    D --> E[Step 4: Verify Count<br/>SELECT COUNT from each table]
+    E --> F[Step 5: Preview Sample Rows<br/>SELECT WHERE ROWNUM <= 10]
+    F --> G([Done])
+
+    subgraph SIZE["Row Count per Table"]
+        direction LR
+        S0[data_dummy<br/>50K]
+        S1[data_dummy1<br/>100K]
+        S2[data_dummy2<br/>200K]
+        S3[data_dummy3<br/>300K]
+        S4[data_dummy4<br/>400K]
+        S5[data_dummy5<br/>500K]
+        S6[data_dummy6<br/>1M]
+        S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6
+    end
+
+    C -.->|7 tables total| SIZE
+```
+
+---
+
 ## Table Structure
 
 All dummy tables in this guide share the same structure:
@@ -258,6 +286,16 @@ Generates exactly `n` rows from `dual` using Oracle's hierarchical query mechani
 ```sql
 SELECT LEVEL FROM dual CONNECT BY LEVEL <= 5;
 -- Returns: 1, 2, 3, 4, 5
+```
+
+```mermaid
+flowchart LR
+    DUAL[dual<br/>1 row source] -->|CONNECT BY LEVEL <= 5| R["LEVEL=1 → id=1, Nama_1, age=34, Jakarta, 12-MAR-2022
+LEVEL=2 → id=2, Nama_2, age=51, Surabaya, 07-NOV-2019
+LEVEL=3 → id=3, Nama_3, age=27, Yogyakarta, 23-JAN-2021
+LEVEL=4 → id=4, Nama_4, age=45, Medan, 15-AUG-2020
+LEVEL=5 → id=5, Nama_5, age=19, Bandung, 03-JUN-2023"]
+    R -->|INSERT INTO table| T[(data_dummy)]
 ```
 
 ### `DBMS_RANDOM.VALUE(low, high)`
