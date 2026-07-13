@@ -147,6 +147,18 @@ Expected result:
 
 ---
 
+## Version Compatibility
+
+| Feature | 11g | 12c | 18c | 19c | 21c | 23ai–26 AI |
+|---------|-----|-----|-----|-----|-----|-----------|
+| `CREATE PROFILE` / `ALTER USER ... PROFILE` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `PASSWORD_LIFE_TIME UNLIMITED` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `dba_users` / `dba_profiles` views | Yes | Yes | Yes | Yes | Yes | Yes |
+
+> **No script differences by version.** This entire procedure relies on basic user/profile management SQL that has been unchanged since early Oracle releases, so the exact same script works identically on every version from **Oracle 11g through 26 AI**. In a 12c+ CDB/PDB environment, run these steps within the specific container (PDB or CDB$ROOT) where the `SYSTEM` account needs the change — the SQL itself does not change, only the connected container.
+
+---
+
 ## Command Summary
 
 ```sql

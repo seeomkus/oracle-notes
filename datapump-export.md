@@ -479,6 +479,64 @@ FULL_DB_EXPORT            EXPORT     FULL      EXECUTING  4
 
 ---
 
+## Version Compatibility
+
+Core `expdp` parameters (`FULL`, `SCHEMAS`, `TABLES`, `DIRECTORY`, `DUMPFILE`, `PARALLEL`, `INCLUDE`/`EXCLUDE`) have been available since Oracle 10g/11g.
+
+| Feature | 11g | 12c | 18c | 19c | 21c | 23ai–26 AI |
+|---------|-----|-----|-----|-----|-----|-----------|
+| Core export parameters (FULL, SCHEMAS, TABLES, DIRECTORY) | Yes | Yes | Yes | Yes | Yes | Yes |
+| `VIEWS_AS_TABLES` | No | Yes | Yes | Yes | Yes | Yes |
+| `TRANSPORTABLE=ALWAYS` | No | Yes | Yes | Yes | Yes | Yes |
+| `COMPRESSION_ALGORITHM` (fine-grained) | No | No | No | Yes | Yes | Yes |
+| `CHECKSUM=SHA256` | No | No | No | Yes | Yes | Yes |
+| `DISABLE_ARCHIVE_LOGGING` (import-side speed-up) | No | No | No | Yes | Yes | Yes |
+| Blockchain table export | No | No | No | No | Yes | Yes |
+| Mandatory column support | No | No | No | No | Yes | Yes |
+
+> **Summary:** This guide's basic usage works on Oracle 11g and above. Features listed as 19c+ or 21c+ will simply be unavailable as parameters on older versions — `expdp` returns an error if you specify them against an unsupported release.
+
+### Script Differences by Version
+
+**Oracle 11g / 12c — schema export (no version-restricted parameters):**
+```bash
+expdp system/password \
+SCHEMAS=HR \
+DIRECTORY=DATAPUMP_DIR \
+DUMPFILE=hr_export.dmp \
+LOGFILE=hr_export.log \
+COMPRESSION=ALL
+```
+> On 11g/12c, `COMPRESSION` only accepts `ALL`, `DATA_ONLY`, `METADATA_ONLY`, or `NONE` — there is no algorithm-level control, and `CHECKSUM` / `DISABLE_ARCHIVE_LOGGING` are not valid parameters.
+
+**Oracle 19c and above — same export, with 19c+ only parameters added:**
+```bash
+expdp system/password \
+SCHEMAS=HR \
+DIRECTORY=DATAPUMP_DIR \
+DUMPFILE=hr_export.dmp \
+LOGFILE=hr_export.log \
+COMPRESSION=ALL \
+COMPRESSION_ALGORITHM=MEDIUM \
+CHECKSUM=SHA256
+```
+> Running this exact command on 11g/12c/18c fails with `ORA-39001: invalid argument value` because `COMPRESSION_ALGORITHM` and `CHECKSUM` do not exist as parameters before 19c. Remove them for older targets.
+
+**Oracle 21c and above — additional support for blockchain tables (no extra parameter needed, handled automatically):**
+```bash
+expdp system/password \
+SCHEMAS=HR \
+DIRECTORY=DATAPUMP_DIR \
+DUMPFILE=hr_export.dmp \
+LOGFILE=hr_export.log \
+COMPRESSION=ALL \
+COMPRESSION_ALGORITHM=HIGH \
+CHECKSUM=SHA256
+```
+> On 21c+, if the schema contains blockchain tables, Data Pump exports them natively without any special flag. Running the same command on 19c/18c against a schema with blockchain tables will error, since blockchain tables did not exist before 21c.
+
+---
+
 ## 7. Troubleshooting
 
 ### Error: ORA-39002: invalid operation / ORA-39070: Unable to open the log file

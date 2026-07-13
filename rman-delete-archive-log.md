@@ -246,6 +246,19 @@ LIST ARCHIVELOG ALL;
 
 ---
 
+## Version Compatibility
+
+| Feature | 11g | 12c | 18c | 19c | 21c | 23ai–26 AI |
+|---------|-----|-----|-----|-----|-----|-----------|
+| `CROSSCHECK ARCHIVELOG ALL` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `LIST ARCHIVELOG ALL COMPLETED BEFORE` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `DELETE ARCHIVELOG` / `DELETE NOPROMPT` / `DELETE FORCE` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `DELETE NOPROMPT EXPIRED ARCHIVELOG` | Yes | Yes | Yes | Yes | Yes | Yes |
+
+> **No script differences by version.** These are foundational RMAN commands that have existed since Oracle 9i/10g and remain unchanged through 26 AI — the same `CROSSCHECK` / `LIST` / `DELETE` sequence in this guide works as-is on **every version from 11g through 26 AI**. In a 12c+ CDB, run RMAN connected to the target database (root or PDB context) as needed — archive log management is CDB-wide by default, and no command syntax changes.
+
+---
+
 ## Important Notes
 
 - Always run `CROSSCHECK` before `DELETE` to ensure RMAN is in sync with actual disk state.

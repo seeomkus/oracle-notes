@@ -528,6 +528,65 @@ ORDER BY pct_done DESC;
 
 ---
 
+## Version Compatibility
+
+Core `impdp` parameters (`FULL`, `SCHEMAS`, `TABLES`, `DIRECTORY`, `DUMPFILE`, `REMAP_SCHEMA`, `REMAP_TABLESPACE`, `TABLE_EXISTS_ACTION`) have been available since Oracle 10g/11g.
+
+| Feature | 11g | 12c | 18c | 19c | 21c | 23ai–26 AI |
+|---------|-----|-----|-----|-----|-----|-----------|
+| Core import parameters (FULL, SCHEMAS, TABLES, REMAP_SCHEMA) | Yes | Yes | Yes | Yes | Yes | Yes |
+| Import into PDB (Multitenant) | No | Yes | Yes | Yes | Yes | Yes |
+| `PARTITION_OPTIONS` (NONE/DEPARTITION/MERGE) | No | Yes | Yes | Yes | Yes | Yes |
+| `VIEWS_AS_TABLES` | No | Yes | Yes | Yes | Yes | Yes |
+| Full Transportable Export/Import | No | Yes | Yes | Yes | Yes | Yes |
+| `DISABLE_ARCHIVE_LOGGING` / `TRANSFORM=DISABLE_ARCHIVE_LOGGING` | No | No | No | Yes | Yes | Yes |
+| Checksum verification (SHA256 dump) | No | No | No | Yes | Yes | Yes |
+| Blockchain table import | No | No | No | No | Yes | Yes |
+| Mandatory column import | No | No | No | No | Yes | Yes |
+
+> **Summary:** This guide's basic usage works on Oracle 11g and above. `PARTITION_OPTIONS` and PDB-targeted import require 12c+; performance features like `DISABLE_ARCHIVE_LOGGING` require 19c+.
+
+### Script Differences by Version
+
+**Oracle 11g — schema import (no PDB, no PARTITION_OPTIONS, no DISABLE_ARCHIVE_LOGGING):**
+```bash
+impdp system/password \
+SCHEMAS=HR \
+DIRECTORY=DATAPUMP_DIR \
+DUMPFILE=hr_export.dmp \
+LOGFILE=hr_import.log \
+REMAP_SCHEMA=HR:HR_NEW \
+TABLE_EXISTS_ACTION=REPLACE
+```
+> On 11g there are no PDBs, so `USERID` connects directly to the single-tenant instance — no `@pdb_service` suffix.
+
+**Oracle 12c and above — import into a specific PDB, with partition merge:**
+```bash
+impdp system/password@ORCLPDB1 \
+SCHEMAS=HR \
+DIRECTORY=DATAPUMP_DIR \
+DUMPFILE=hr_export.dmp \
+LOGFILE=hr_import.log \
+REMAP_SCHEMA=HR:HR_NEW \
+PARTITION_OPTIONS=MERGE
+```
+> `@ORCLPDB1` (PDB service connection) and `PARTITION_OPTIONS` are only valid from Oracle 12c onward. Running this against 11g fails because neither PDBs nor `PARTITION_OPTIONS` exist there.
+
+**Oracle 19c and above — same import, with performance parameter added:**
+```bash
+impdp system/password \
+SCHEMAS=HR \
+DIRECTORY=DATAPUMP_DIR \
+DUMPFILE=hr_19c.dmp \
+LOGFILE=hr_19c_import.log \
+PARALLEL=4 \
+DISABLE_ARCHIVE_LOGGING=Y \
+TABLE_EXISTS_ACTION=REPLACE
+```
+> `DISABLE_ARCHIVE_LOGGING=Y` (and the equivalent `TRANSFORM=DISABLE_ARCHIVE_LOGGING:Y`) only exist from Oracle 19c onward. On 11g/12c/18c, remove this parameter — it is not recognized and the job will fail with `ORA-39001`.
+
+---
+
 ## 7. Troubleshooting
 
 ### Error: ORA-39002 / ORA-39070: Unable to open the log file

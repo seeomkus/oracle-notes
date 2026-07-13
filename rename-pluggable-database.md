@@ -204,6 +204,21 @@ The PDB should now appear with the new name and be in `READ WRITE` mode with `RE
 
 ---
 
+## Version Compatibility
+
+| Feature | 11g | 12c | 18c | 19c | 21c | 23ai–26 AI |
+|---------|-----|-----|-----|-----|-----|-----------|
+| Pluggable Database (PDB) / CDB Multitenant architecture | **No** | Yes | Yes | Yes | Yes | Yes |
+| `ALTER PLUGGABLE DATABASE ... CLOSE/OPEN RESTRICTED` | **N/A** | Yes | Yes | Yes | Yes | Yes |
+| `ALTER SESSION SET CONTAINER` | **N/A** | Yes | Yes | Yes | Yes | Yes |
+| `ALTER PLUGGABLE DATABASE RENAME GLOBAL_NAME TO` | **N/A** | Yes | Yes | Yes | Yes | Yes |
+
+> **This entire procedure does not apply to Oracle 11g.** The Multitenant architecture (CDB/PDB) was introduced in Oracle 12c — Oracle 11g is a non-CDB, single-tenant database and has no concept of a Pluggable Database to rename. There is no alternate 11g script for this task, since the underlying feature simply does not exist on that version.
+
+**No script differences across supported versions:** The exact same command sequence (`CLOSE IMMEDIATE` → `OPEN RESTRICTED` → `ALTER SESSION SET CONTAINER` → `RENAME GLOBAL_NAME TO` → `CLOSE`/`OPEN`) works identically and unchanged on **Oracle 12c, 18c, 19c, 21c, and 23ai–26 AI** — this guide is written against 19c, but it can be used as-is on any of those versions with no syntax adjustments.
+
+---
+
 ## Common Errors
 
 ### ORA-00940: Invalid ALTER Command

@@ -47,15 +47,34 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | No | File | Description |
 |---|---|---|
 | 1 | [cleanup-audit-trace-alert.md](cleanup-audit-trace-alert.md) | Guide to clean up Oracle diagnostic files (audit `.aud`, trace `.trc`, alert log, and incident files) using ADRCI and OS commands on Oracle Linux and Windows Server — covers ADRCI purge types, retention policies, combined shell/batch scripts, cron/Task Scheduler scheduling, unified audit cleanup (12c+), and troubleshooting (11g–26 AI). |
-| 2 | [datapump-export.md](datapump-export.md) | Complete guide to backup using Oracle Data Pump Export (`expdp`) on Windows and Linux — covers directory setup, all parameters, 12c/19c/21c features, usage examples with sample output, and troubleshooting. |
-| 3 | [datapump-import.md](datapump-import.md) | Complete guide to restore using Oracle Data Pump Import (`impdp`) on Windows and Linux — covers directory setup, all parameters, remapping options, 12c/19c/21c features, usage examples with sample output, and troubleshooting. |
-| 4 | [generate-dummy-data.md](generate-dummy-data.md) | Guide to generate large volumes of dummy data in Oracle using `CONNECT BY LEVEL` and `DBMS_RANDOM` — covers 7 table variants from 50K to 1M rows, with verification and key technique explanations. |
+| 2 | [datapump-export.md](datapump-export.md) | Complete guide to backup using Oracle Data Pump Export (`expdp`) on Windows and Linux — covers directory setup, all parameters, 12c/19c/21c features, usage examples with sample output, version-by-version script differences (11g–26 AI), and troubleshooting. |
+| 3 | [datapump-import.md](datapump-import.md) | Complete guide to restore using Oracle Data Pump Import (`impdp`) on Windows and Linux — covers directory setup, all parameters, remapping options, 12c/19c/21c features, usage examples with sample output, version-by-version script differences (11g–26 AI), and troubleshooting. |
+| 4 | [generate-dummy-data.md](generate-dummy-data.md) | Guide to generate large volumes of dummy data in Oracle using `CONNECT BY LEVEL` and `DBMS_RANDOM` — covers 7 table variants from 50K to 1M rows, with verification, key technique explanations, and version compatibility (11g–26 AI, no script changes). |
 | 5 | [kill-sessions-and-lock-users.md](kill-sessions-and-lock-users.md) | Guide to kill active Oracle sessions and lock user accounts — includes dry-run SQL script, execution SQL script, Windows `.bat` automation, Oracle Linux `.sh` equivalent, cron/Task Scheduler setup, and version compatibility notes (11g–26 AI). |
-| 6 | [move-tablespace-objects.md](move-tablespace-objects.md) | Guide to move all tablespace objects (tables, partitions, sub-partitions, LOBs, and indexes) from one tablespace to another using a generate-then-execute DDL pattern. |
-| 7 | [oracle-no-expire-password.md](oracle-no-expire-password.md) | Complete guide to change the `SYSTEM` user profile so the password never expires — covers status check, creating a new profile, and final verification. |
-| 8 | [rename-pluggable-database.md](rename-pluggable-database.md) | Step-by-step guide to rename a Pluggable Database (PDB) in Oracle 19c — covers closing the PDB, opening in restricted mode, renaming via `RENAME GLOBAL_NAME TO`, and verification. |
-| 9 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | Guide to safely delete archive log files older than 1 month via RMAN — covers crosscheck, list preview, delete options, and verification with sample output. |
+| 6 | [move-tablespace-objects.md](move-tablespace-objects.md) | Guide to move all tablespace objects (tables, partitions, sub-partitions, LOBs, and indexes) from one tablespace to another using a generate-then-execute DDL pattern (8i and above, `ONLINE` move requires Enterprise Edition 12.2+). |
+| 7 | [oracle-no-expire-password.md](oracle-no-expire-password.md) | Complete guide to change the `SYSTEM` user profile so the password never expires — covers status check, creating a new profile, final verification, and version compatibility (11g–26 AI, no script changes). |
+| 8 | [rename-pluggable-database.md](rename-pluggable-database.md) | Step-by-step guide to rename a Pluggable Database (PDB) in Oracle 19c — covers closing the PDB, opening in restricted mode, renaming via `RENAME GLOBAL_NAME TO`, verification, and version compatibility (12c–26 AI only; not applicable to 11g). |
+| 9 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | Guide to safely delete archive log files older than 1 month via RMAN — covers crosscheck, list preview, delete options, verification with sample output, and version compatibility (11g–26 AI, no script changes). |
 | 10 | [shutdown-immediate-hang.md](shutdown-immediate-hang.md) | Step-by-step guide to resolve `SHUTDOWN IMMEDIATE` hang on Oracle Database — covers diagnosis, escalation to `SHUTDOWN ABORT`, OS-level force kill on Oracle Linux and Windows Server, IPC cleanup, crash recovery, and prevention tips, with Mermaid flow diagrams. |
+
+---
+
+## Version Compatibility by Document
+
+Each document now includes its own **Version Compatibility** section. This table summarizes which documents share the exact same script across all supported versions, and which ones require version-specific script variants.
+
+| Document | Supported Versions | Script Differs by Version? |
+|---|---|---|
+| [cleanup-audit-trace-alert.md](cleanup-audit-trace-alert.md) | 11g – 26 AI | Yes — Unified Audit cleanup (`DBMS_AUDIT_MGMT`) is 12c+ only |
+| [datapump-export.md](datapump-export.md) | 11g – 26 AI (core parameters) | Yes — `COMPRESSION_ALGORITHM`/`CHECKSUM` require 19c+, blockchain table support requires 21c+ |
+| [datapump-import.md](datapump-import.md) | 11g – 26 AI (core parameters) | Yes — `PARTITION_OPTIONS`/PDB import require 12c+, `DISABLE_ARCHIVE_LOGGING` requires 19c+ |
+| [generate-dummy-data.md](generate-dummy-data.md) | 11g – 26 AI | No — identical script on every version |
+| [kill-sessions-and-lock-users.md](kill-sessions-and-lock-users.md) | 11g – 26 AI | Yes — use `DBMS_LOCK.SLEEP` on 11g/12c, `DBMS_SESSION.SLEEP` on 18c+ |
+| [move-tablespace-objects.md](move-tablespace-objects.md) | 8i and above | Yes — `ONLINE` move clause requires Enterprise Edition 12.2+ |
+| [oracle-no-expire-password.md](oracle-no-expire-password.md) | 11g – 26 AI | No — identical script on every version |
+| [rename-pluggable-database.md](rename-pluggable-database.md) | **12c – 26 AI only** (not applicable to 11g) | No — identical script across all supported (12c+) versions |
+| [rman-delete-archive-log.md](rman-delete-archive-log.md) | 11g – 26 AI | No — identical script on every version |
+| [shutdown-immediate-hang.md](shutdown-immediate-hang.md) | 11g – 26 AI | No — identical procedure on every version |
 
 ---
 

@@ -326,6 +326,18 @@ Generates a random date within the last 10 years (3,650 days). `TRUNC()` strips 
 
 ---
 
+## Version Compatibility
+
+| Feature | 11g | 12c | 18c | 19c | 21c | 23ai–26 AI |
+|---------|-----|-----|-----|-----|-----|-----------|
+| `CONNECT BY LEVEL` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `DBMS_RANDOM.VALUE` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `EXECUTE IMMEDIATE 'DROP TABLE ... PURGE'` | Yes | Yes | Yes | Yes | Yes | Yes |
+
+> **No script differences by version.** `CONNECT BY LEVEL` and `DBMS_RANDOM` are standard SQL/PL-SQL features that have existed since Oracle 10g and work identically through 26 AI — every script in this guide, including the Complete Script, can be run unmodified on **any version from 11g through 26 AI**.
+
+---
+
 ## Complete Script
 
 ```sql
