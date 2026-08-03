@@ -37,7 +37,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | Storage Management | Move Tablespace Objects |
 | Maintenance & Cleanup | Audit/Trace/Alert Cleanup, RMAN Archive Log Deletion |
 | Security & User Management | Kill Sessions & Lock Users, Password Never Expires |
-| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang |
+| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure |
 | Development & Testing | Generate Dummy Data |
 
 ---
@@ -56,6 +56,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | 8 | [rename-pluggable-database.md](rename-pluggable-database.md) | Step-by-step guide to rename a Pluggable Database (PDB) in Oracle 19c — covers closing the PDB, opening in restricted mode, renaming via `RENAME GLOBAL_NAME TO`, verification, and version compatibility (12c–26 AI only; not applicable to 11g). |
 | 9 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | Guide to safely delete archive log files older than 1 month via RMAN — covers crosscheck, list preview, delete options, verification with sample output, and version compatibility (11g–26 AI, no script changes). |
 | 10 | [shutdown-immediate-hang.md](shutdown-immediate-hang.md) | Step-by-step guide to resolve `SHUTDOWN IMMEDIATE` hang on Oracle Database — covers diagnosis, escalation to `SHUTDOWN ABORT`, OS-level force kill on Oracle Linux and Windows Server, IPC cleanup, crash recovery, and prevention tips, with Mermaid flow diagrams. |
+| 11 | [ora-00371-shared-pool-startup-failure.md](ora-00371-shared-pool-startup-failure.md) | Guide to resolve `ORA-00371` (not enough shared pool memory) and `ORA-01078`/`LRM-00109` (bad PFILE path) during database startup on Oracle Linux — covers root cause analysis of orphaned shared memory/semaphores, cleanup with `ipcs`/`ipcrm`, correct PFILE startup, SPFILE regeneration, and OOM/kernel-parameter troubleshooting tips. |
 
 ---
 
@@ -75,6 +76,7 @@ Each document now includes its own **Version Compatibility** section. This table
 | [rename-pluggable-database.md](rename-pluggable-database.md) | **12c – 26 AI only** (not applicable to 11g) | No — identical script across all supported (12c+) versions |
 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | 11g – 26 AI | No — identical script on every version |
 | [shutdown-immediate-hang.md](shutdown-immediate-hang.md) | 11g – 26 AI | No — identical procedure on every version |
+| [ora-00371-shared-pool-startup-failure.md](ora-00371-shared-pool-startup-failure.md) | 11g – 26 AI | No — identical `ipcrm`/startup procedure on every version |
 
 ---
 
