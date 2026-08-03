@@ -37,7 +37,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | Storage Management | Move Tablespace Objects |
 | Maintenance & Cleanup | Audit/Trace/Alert Cleanup, RMAN Archive Log Deletion |
 | Security & User Management | Kill Sessions & Lock Users, Password Never Expires |
-| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure |
+| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure, ORA-01102 Cannot Mount Exclusive Mode |
 | Development & Testing | Generate Dummy Data |
 
 ---
@@ -57,6 +57,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | 9 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | Guide to safely delete archive log files older than 1 month via RMAN — covers crosscheck, list preview, delete options, verification with sample output, and version compatibility (11g–26 AI, no script changes). |
 | 10 | [shutdown-immediate-hang.md](shutdown-immediate-hang.md) | Step-by-step guide to resolve `SHUTDOWN IMMEDIATE` hang on Oracle Database — covers diagnosis, escalation to `SHUTDOWN ABORT`, OS-level force kill on Oracle Linux and Windows Server, IPC cleanup, crash recovery, and prevention tips, with Mermaid flow diagrams. |
 | 11 | [ora-00371-shared-pool-startup-failure.md](ora-00371-shared-pool-startup-failure.md) | Guide to resolve `ORA-00371` (not enough shared pool memory) and `ORA-01078`/`LRM-00109` (bad PFILE path) during database startup on Oracle Linux — covers root cause analysis of orphaned shared memory/semaphores, cleanup with `ipcs`/`ipcrm`, correct PFILE startup, SPFILE regeneration, and OOM/kernel-parameter troubleshooting tips. |
+| 12 | [ora-01102-cannot-mount-exclusive-mode.md](ora-01102-cannot-mount-exclusive-mode.md) | Guide to resolve `ORA-01102` (cannot mount database in EXCLUSIVE mode) during startup on Oracle Linux — covers root cause analysis of orphaned shared memory/semaphores and stale lock files, cleanup with `ipcs`/`ipcrm`, retry startup, with a Mermaid troubleshooting flow diagram. |
 
 ---
 
@@ -77,6 +78,7 @@ Each document now includes its own **Version Compatibility** section. This table
 | [rman-delete-archive-log.md](rman-delete-archive-log.md) | 11g – 26 AI | No — identical script on every version |
 | [shutdown-immediate-hang.md](shutdown-immediate-hang.md) | 11g – 26 AI | No — identical procedure on every version |
 | [ora-00371-shared-pool-startup-failure.md](ora-00371-shared-pool-startup-failure.md) | 11g – 26 AI | No — identical `ipcrm`/startup procedure on every version |
+| [ora-01102-cannot-mount-exclusive-mode.md](ora-01102-cannot-mount-exclusive-mode.md) | 11g – 26 AI | No — identical `ipcrm`/startup procedure on every version |
 
 ---
 
