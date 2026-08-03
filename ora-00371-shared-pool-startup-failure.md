@@ -25,6 +25,30 @@ LRM-00109: could not open parameter file '/u01/app/oracle/product/11.2.0/dbhome_
 ORA-01078: failure in processing system parameters
 ```
 
+## Troubleshooting Flow
+
+```mermaid
+flowchart TD
+    A[STARTUP fails] --> B{Error?}
+    B -->|ORA-00371 shared pool| C[Check for stale ora_pmon/oracleSID processes]
+    C --> D{Process running healthy?}
+    D -->|Yes, healthy instance| E[Do NOT remove IPC resources]
+    D -->|No, orphaned/crashed| F[Remove orphaned shared memory: ipcrm -m]
+    F --> G[Remove orphaned semaphores: ipcrm -s]
+    G --> H[kill -9 remaining stale background processes]
+    H --> I[Retry STARTUP]
+
+    B -->|ORA-01078 / LRM-00109| J[Verify ORACLE_HOME path]
+    J --> K[Confirm correct dbs/initSID.ora location]
+    K --> L[Retry STARTUP PFILE= with correct path]
+
+    I --> M{Startup successful?}
+    L --> M
+    M -->|Yes| N[CREATE SPFILE FROM MEMORY]
+    N --> O[Investigate root cause: OOM killer, shmmax/shmall, swap]
+    M -->|No| P[Check alert log and OS logs for further diagnosis]
+```
+
 ## Root Cause Analysis
 
 Two distinct problems are stacked on top of each other here:
