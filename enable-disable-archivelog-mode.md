@@ -2,8 +2,8 @@
 
 ## Environment
 
-- Oracle Database 8i and above (examples shown using 12c syntax; identical on every later release)
-- Applicable to both Container Database (CDB) and non-CDB architectures on 12c+; single-instance (non-CDB) only on 11g and earlier
+- Oracle Database 8i and above — the syntax and procedure below are identical across every version
+- Applies to single-instance databases on all versions; on multitenant architectures (12c+), the setting applies at the CDB (root container) level
 - Connected as `oracle` OS user via `sqlplus / as sysdba`
 
 ## Overview
@@ -236,7 +236,7 @@ Automatic archival             Disabled
    - No Data Guard standby, Flashback Database, or RMAN backup strategy depends on continuous archiving — disabling ARCHIVELOG breaks the recovery chain and typically requires a fresh full backup once re-enabled.
    - This change is intentional and understood by the team; it is unusual to disable ARCHIVELOG on a database that previously had it enabled for a reason.
 
-5. **CDB/PDB note (12c multitenant):** `ALTER DATABASE ARCHIVELOG` / `NOARCHIVELOG` operates at the CDB (root container) level — archiving mode is not configurable independently per-PDB in 12c. All PDBs within a CDB share the same archive log mode as the CDB itself.
+5. **CDB/PDB note (multitenant architectures, 12c and later only):** `ALTER DATABASE ARCHIVELOG` / `NOARCHIVELOG` operates at the CDB (root container) level — archiving mode is not configurable independently per-PDB. All PDBs within a CDB share the same archive log mode as the CDB itself. This does not apply to pre-12c releases, which have no CDB/PDB concept.
 
 6. **Verify space usage periodically** after enabling ARCHIVELOG, especially during the first backup cycle:
 
@@ -244,7 +244,7 @@ Automatic archival             Disabled
    SELECT * FROM v$flash_recovery_area_usage;
    ```
 
-   or, in later 12c releases:
+   or, on newer releases:
 
    ```sql
    SELECT * FROM v$recovery_area_usage;
@@ -261,7 +261,7 @@ This procedure has one of the longest unbroken compatibility spans of any comman
 | 8i / 9i | Yes | Same `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax and MOUNT-state requirement; no CDB/PDB concept yet |
 | 10g | Yes | Same procedure; Flash Recovery Area (FRA) introduced in 10g, `v$flash_recovery_area_usage` available for space checks |
 | 11g | Yes | Same procedure; no CDB/PDB — archiving mode applies to the single database instance directly |
-| 12c | Yes | As documented in this guide; archiving mode applies at the CDB (root container) level for multitenant databases — cannot be set per-PDB |
+| 12c | Yes | Multitenant architecture introduced; archiving mode applies at the CDB (root container) level — cannot be set per-PDB |
 | 18c – 19c | Yes | Same procedure and CDB-level behavior as 12c |
 | 21c – 23ai | Yes | Same procedure; `v$recovery_area_usage` is the preferred view over the older `v$flash_recovery_area_usage` |
 | 26 AI | Yes | Same procedure and syntax; no changes observed to the ARCHIVELOG mode commands themselves |
