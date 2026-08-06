@@ -37,7 +37,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | Storage Management | Move Tablespace Objects |
 | Maintenance & Cleanup | Audit/Trace/Alert Cleanup, RMAN Archive Log Deletion |
 | Security & User Management | Kill Sessions & Lock Users, Password Never Expires |
-| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure, ORA-01102 Cannot Mount Exclusive Mode, Change Oracle SID on Running Database, Enable/Disable ARCHIVELOG Mode |
+| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure, ORA-01102 Cannot Mount Exclusive Mode, Change Oracle SID on Running Database, Enable/Disable ARCHIVELOG Mode, ARCHIVELOG Mode Importance & Trade-offs |
 | Development & Testing | Generate Dummy Data |
 
 ---
@@ -60,6 +60,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | 12 | [ora-01102-cannot-mount-exclusive-mode.md](ora-01102-cannot-mount-exclusive-mode.md) | Guide to resolve `ORA-01102` (cannot mount database in EXCLUSIVE mode) during startup on Oracle Linux — covers root cause analysis of orphaned shared memory/semaphores and stale lock files, cleanup with `ipcs`/`ipcrm`, retry startup, with a Mermaid troubleshooting flow diagram. |
 | 13 | [change-oracle-sid-running-database.md](change-oracle-sid-running-database.md) | Guide to change the `ORACLE_SID` of an already-running database without rebuilding it — covers SPFILE copy/rename, clean shutdown/startup under the new SID, listener re-registration verification, a post-change cleanup checklist (oratab, password file, tnsnames.ora), and when a true `DBNEWID`/`nid` rename is required instead, with a Mermaid procedure flow diagram. |
 | 14 | [enable-disable-archivelog-mode.md](enable-disable-archivelog-mode.md) | Guide to enable and disable `ARCHIVELOG` mode (8i and above) — covers the MOUNT-state requirement, step-by-step enable/disable procedures, Fast Recovery Area configuration, `v$archive_dest` verification, CDB/PDB notes, and space-monitoring recommendations, with Mermaid procedure flow diagrams for both directions. |
+| 15 | [archivelog-mode-importance-and-tradeoffs.md](archivelog-mode-importance-and-tradeoffs.md) | Decision-support guide covering why `ARCHIVELOG` mode matters, what is lost in `NOARCHIVELOG`, which environments (production, standby, staging, QA/UAT, dev) should use which mode, and a full advantages/disadvantages comparison, with a Mermaid diagram of the redo/archiving flow. |
 
 ---
 
@@ -83,6 +84,7 @@ Each document now includes its own **Version Compatibility** section. This table
 | [ora-01102-cannot-mount-exclusive-mode.md](ora-01102-cannot-mount-exclusive-mode.md) | 11g – 26 AI | No — identical `ipcrm`/startup procedure on every version |
 | [change-oracle-sid-running-database.md](change-oracle-sid-running-database.md) | 11g – 26 AI | No — identical SPFILE/restart procedure; `DBNEWID` (`nid`) alternative unchanged across versions |
 | [enable-disable-archivelog-mode.md](enable-disable-archivelog-mode.md) | 8i – 26 AI | No — identical `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax on every version; only FRA availability (10g+), CDB-level scope (12c+), and the recovery-area usage view name differ by version |
+| [archivelog-mode-importance-and-tradeoffs.md](archivelog-mode-importance-and-tradeoffs.md) | 8i – 26 AI | No — a conceptual/decision guide, not a script; the trade-offs described apply identically on every version |
 
 ---
 
