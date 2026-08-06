@@ -37,7 +37,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | Storage Management | Move Tablespace Objects |
 | Maintenance & Cleanup | Audit/Trace/Alert Cleanup, RMAN Archive Log Deletion |
 | Security & User Management | Kill Sessions & Lock Users, Password Never Expires |
-| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure, ORA-01102 Cannot Mount Exclusive Mode, Change Oracle SID on Running Database |
+| Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure, ORA-01102 Cannot Mount Exclusive Mode, Change Oracle SID on Running Database, Enable/Disable ARCHIVELOG Mode |
 | Development & Testing | Generate Dummy Data |
 
 ---
@@ -59,6 +59,7 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | 11 | [ora-00371-shared-pool-startup-failure.md](ora-00371-shared-pool-startup-failure.md) | Guide to resolve `ORA-00371` (not enough shared pool memory) and `ORA-01078`/`LRM-00109` (bad PFILE path) during database startup on Oracle Linux — covers root cause analysis of orphaned shared memory/semaphores, cleanup with `ipcs`/`ipcrm`, correct PFILE startup, SPFILE regeneration, and OOM/kernel-parameter troubleshooting tips. |
 | 12 | [ora-01102-cannot-mount-exclusive-mode.md](ora-01102-cannot-mount-exclusive-mode.md) | Guide to resolve `ORA-01102` (cannot mount database in EXCLUSIVE mode) during startup on Oracle Linux — covers root cause analysis of orphaned shared memory/semaphores and stale lock files, cleanup with `ipcs`/`ipcrm`, retry startup, with a Mermaid troubleshooting flow diagram. |
 | 13 | [change-oracle-sid-running-database.md](change-oracle-sid-running-database.md) | Guide to change the `ORACLE_SID` of an already-running database without rebuilding it — covers SPFILE copy/rename, clean shutdown/startup under the new SID, listener re-registration verification, a post-change cleanup checklist (oratab, password file, tnsnames.ora), and when a true `DBNEWID`/`nid` rename is required instead, with a Mermaid procedure flow diagram. |
+| 14 | [enable-disable-archivelog-mode.md](enable-disable-archivelog-mode.md) | Guide to enable and disable `ARCHIVELOG` mode on Oracle 12c — covers the MOUNT-state requirement, step-by-step enable/disable procedures, Fast Recovery Area configuration, `v$archive_dest` verification, CDB/PDB notes, and space-monitoring recommendations, with Mermaid procedure flow diagrams for both directions. |
 
 ---
 
@@ -81,6 +82,7 @@ Each document now includes its own **Version Compatibility** section. This table
 | [ora-00371-shared-pool-startup-failure.md](ora-00371-shared-pool-startup-failure.md) | 11g – 26 AI | No — identical `ipcrm`/startup procedure on every version |
 | [ora-01102-cannot-mount-exclusive-mode.md](ora-01102-cannot-mount-exclusive-mode.md) | 11g – 26 AI | No — identical `ipcrm`/startup procedure on every version |
 | [change-oracle-sid-running-database.md](change-oracle-sid-running-database.md) | 11g – 26 AI | No — identical SPFILE/restart procedure; `DBNEWID` (`nid`) alternative unchanged across versions |
+| [enable-disable-archivelog-mode.md](enable-disable-archivelog-mode.md) | 11g – 26 AI | No — identical `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax; only the recovery-area usage view name differs by version |
 
 ---
 
