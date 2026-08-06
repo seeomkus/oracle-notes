@@ -1,9 +1,9 @@
-# Enabling and Disabling ARCHIVELOG Mode in Oracle 12c
+# Enabling and Disabling ARCHIVELOG Mode in Oracle Database
 
 ## Environment
 
-- Oracle Database 12c (12.1 / 12.2)
-- Applicable to both Container Database (CDB) and non-CDB architectures
+- Oracle Database 8i and above (examples shown using 12c syntax; identical on every later release)
+- Applicable to both Container Database (CDB) and non-CDB architectures on 12c+; single-instance (non-CDB) only on 11g and earlier
 - Connected as `oracle` OS user via `sqlplus / as sysdba`
 
 ## Overview
@@ -254,8 +254,16 @@ Automatic archival             Disabled
 
 ## Version Compatibility
 
-| Version | Notes |
-|---|---|
-| 11g | Same `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax and MOUNT-state requirement |
-| 12c | As documented above; archiving mode applies at CDB level for multitenant databases |
-| 18c – 26 AI | Same procedure; `v$recovery_area_usage` is the preferred view over the older `v$flash_recovery_area_usage` in more recent releases |
+This procedure has one of the longest unbroken compatibility spans of any command in Oracle — the `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax and the MOUNT-state requirement have not changed since Oracle 8i.
+
+| Version | Supported? | Notes |
+|---|---|---|
+| 8i / 9i | Yes | Same `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax and MOUNT-state requirement; no CDB/PDB concept yet |
+| 10g | Yes | Same procedure; Flash Recovery Area (FRA) introduced in 10g, `v$flash_recovery_area_usage` available for space checks |
+| 11g | Yes | Same procedure; no CDB/PDB — archiving mode applies to the single database instance directly |
+| 12c | Yes | As documented in this guide; archiving mode applies at the CDB (root container) level for multitenant databases — cannot be set per-PDB |
+| 18c – 19c | Yes | Same procedure and CDB-level behavior as 12c |
+| 21c – 23ai | Yes | Same procedure; `v$recovery_area_usage` is the preferred view over the older `v$flash_recovery_area_usage` |
+| 26 AI | Yes | Same procedure and syntax; no changes observed to the ARCHIVELOG mode commands themselves |
+
+**Summary: fully supported on Oracle 8i through 26 AI, with no script differences** — the only version-dependent details are (a) the Fast/Flash Recovery Area feature itself, which requires 10g+, and (b) the CDB-level scope of the setting, which only applies once multitenant architecture is used (12c+).
