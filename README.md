@@ -39,6 +39,8 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | Security & User Management | Kill Sessions & Lock Users, Password Never Expires |
 | Database Administration | Rename Pluggable Database, Shutdown Immediate Hang, ORA-00371 Shared Pool Startup Failure, ORA-01102 Cannot Mount Exclusive Mode, Change Oracle SID on Running Database, Enable/Disable ARCHIVELOG Mode, ARCHIVELOG Mode Importance & Trade-offs |
 | Development & Testing | Generate Dummy Data |
+| Data Encryption | TDE Implementation Guide — Full Table vs Specific Columns, Separated Tablespace |
+| Decision Support | Encryption Approach Decision Guide — TDE Column vs Tablespace |
 
 ---
 
@@ -61,6 +63,8 @@ All sensitive information (schema names, hostnames, IP addresses, SIDs) has been
 | 13 | [change-oracle-sid-running-database.md](change-oracle-sid-running-database.md) | Guide to change the `ORACLE_SID` of an already-running database without rebuilding it — covers SPFILE copy/rename, clean shutdown/startup under the new SID, listener re-registration verification, a post-change cleanup checklist (oratab, password file, tnsnames.ora), and when a true `DBNEWID`/`nid` rename is required instead, with a Mermaid procedure flow diagram. |
 | 14 | [enable-disable-archivelog-mode.md](enable-disable-archivelog-mode.md) | Guide to enable and disable `ARCHIVELOG` mode (8i and above) — covers the MOUNT-state requirement, step-by-step enable/disable procedures, Fast Recovery Area configuration, `v$archive_dest` verification, CDB/PDB notes, and space-monitoring recommendations, with Mermaid procedure flow diagrams for both directions. |
 | 15 | [archivelog-mode-importance-and-tradeoffs.md](archivelog-mode-importance-and-tradeoffs.md) | Decision-support guide covering why `ARCHIVELOG` mode matters, what is lost in `NOARCHIVELOG`, which environments (production, standby, staging, QA/UAT, dev) should use which mode, and a full advantages/disadvantages comparison, with a Mermaid diagram of the redo/archiving flow. |
+| 16 | [tde-implementation-guide.md](tde-implementation-guide.md) | Self-contained, from-scratch guide to implementing Transparent Data Encryption (TDE) with encrypted data kept physically separated from unencrypted data at the tablespace level — introduces how TDE works, sets up the keystore/master key, creates a regular tablespace for non-sensitive tables plus a dedicated tablespace for sensitive data, then offers two options for the sensitive table: Option A (encrypt the whole table via tablespace-level encryption) vs Option B (encrypt only specific columns via column-level encryption in its own dedicated, non-encrypted tablespace); covers reading the encrypted data back with an ordinary `SELECT`, a raw-datafile sanity check to confirm data is genuinely unreadable outside the database, retrofitting encryption onto existing tables, troubleshooting, and version compatibility (10g R2/11g R1–26 AI), with a Mermaid procedure flow diagram. |
+| 17 | [encryption-approach-decision-guide.md](encryption-approach-decision-guide.md) | Decision-support guide comparing TDE Column-level and TDE Tablespace-level encryption (plus VPD, Oracle Label Security, Database Vault, views, and column-level GRANT/REVOKE for context) for protecting sensitive columns/tables with zero application changes — covers a full comparison matrix, OLTP performance ranking, what each option does/doesn't protect against, licensing notes, key-management and indexing caveats, a benchmarking checklist, and a final recommendation table, with a Mermaid decision-flow diagram. Not an implementation guide — see [tde-implementation-guide.md](tde-implementation-guide.md) for step-by-step commands. |
 
 ---
 
@@ -85,6 +89,8 @@ Each document now includes its own **Version Compatibility** section. This table
 | [change-oracle-sid-running-database.md](change-oracle-sid-running-database.md) | 11g – 26 AI | No — identical SPFILE/restart procedure; `DBNEWID` (`nid`) alternative unchanged across versions |
 | [enable-disable-archivelog-mode.md](enable-disable-archivelog-mode.md) | 8i – 26 AI | No — identical `ALTER DATABASE ARCHIVELOG`/`NOARCHIVELOG` syntax on every version; only FRA availability (10g+), CDB-level scope (12c+), and the recovery-area usage view name differ by version |
 | [archivelog-mode-importance-and-tradeoffs.md](archivelog-mode-importance-and-tradeoffs.md) | 8i – 26 AI | No — a conceptual/decision guide, not a script; the trade-offs described apply identically on every version |
+| [tde-implementation-guide.md](tde-implementation-guide.md) | 10g R2 (column) / 11g R1 (tablespace) – 26 AI (Enterprise Edition only) | No — identical `CREATE TABLESPACE`/`CREATE TABLE` syntax on every supported version; only the `ONLINE` variant of `ALTER TABLE ... MOVE TABLESPACE` requires Enterprise Edition 12.2+ |
+| [encryption-approach-decision-guide.md](encryption-approach-decision-guide.md) | 8i – 26 AI (per-feature minimums noted inside) | No — a conceptual/decision guide, not a script; comparison and recommendations apply identically once the referenced features' own minimum versions are met |
 
 ---
 
